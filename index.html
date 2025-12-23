@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rebelverse</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#111827; --panel2:#0f172a;
+      --text:#e5e7eb; --muted:#9ca3af; --border:#243244;
+      --accent:#60a5fa; --accent2:#a78bfa; --danger:#fb7185;
+      --good:#34d399;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    [data-theme="light"]{
+      --bg:#f5f7fb; --panel:#ffffff; --panel2:#f1f5ff;
+      --text:#0b1220; --muted:#5b6473; --border:#d9e2f2;
+      --accent:#2563eb; --accent2:#7c3aed;
+      --shadow: 0 10px 30px rgba(15, 23, 42, .12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(167,139,250,.25), transparent 60%),
+                  radial-gradient(1200px 600px at 90% 0%, rgba(96,165,250,.25), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .wrap{max-width:1080px;margin:0 auto;padding:16px}
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 75%, transparent);
+      border-bottom:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    }
+    .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 16px}
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      font-weight:900; letter-spacing:.3px;
+    }
+    .logo{
+      width:38px;height:38px;border-radius:12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: var(--shadow);
+      display:grid;place-items:center;
+      font-weight:900;
+    }
+    .logo span{font-family:var(--mono); font-size:14px}
+    .pill{
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 82%, transparent);
+      border-radius:999px;
+      padding:10px 12px;
+      display:flex;align-items:center;gap:8px;
+      min-width: 240px;
+    }
+    .pill input{
+      width:100%; border:0; outline:0; background:transparent; color:var(--text);
+      font-size:14px;
+    }
+    .btn{
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 86%, transparent);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px;
+      user-select:none;
+    }
+    .btn:hover{border-color: color-mix(in srgb, var(--accent) 40%, var(--border));}
+    .btn.primary{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border:0;
+      color:white;
+      font-weight:700;
+    }
+    .btn.danger{
+      border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+      color: color-mix(in srgb, var(--danger) 85%, var(--text));
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 280px minmax(0,1fr) 320px;
+      gap:16px;
+      padding:16px 0;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr;}
+      .left,.right{display:none}
+      .pill{min-width: 0}
+    }
+    .card{
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;
+    }
+    .card .hd h3{margin:0;font-size:14px;color:var(--muted);font-weight:800;letter-spacing:.2px;text-transform:uppercase}
+    .card .bd{padding:14px}
+    .nav a{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:12px;
+      text-decoration:none;
+      color:var(--text);
+      border:1px solid transparent;
+    }
+    .nav a:hover{background: color-mix(in srgb, var(--panel2) 60%, transparent); border-color: color-mix(in srgb, var(--border) 70%, transparent)}
+    .nav a.active{background: color-mix(in srgb, var(--panel2) 80%, transparent); border-color: color-mix(in srgb, var(--accent) 35%, var(--border))}
+    .small{font-size:12px;color:var(--muted)}
+    textarea{
+      width:100%; resize:vertical; min-height:92px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel2) 75%, transparent);
+      color:var(--text);
+      border-radius: 14px;
+      padding:12px;
+      outline:none;
+      font-family:var(--sans);
+      font-size:14px;
+      line-height:1.3;
+    }
+    .composerRow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px}
+    .counter{font-family:var(--mono);font-size:12px;color:var(--muted)}
+    .feed{display:flex;flex-direction:column;gap:12px}
+    .post{
+      border:1px solid var(--border);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      overflow:hidden;
+    }
+    .post .meta{
+      display:flex;justify-content:space-between;align-items:flex-start;
+      padding:12px 12px 0;
+      gap:10px;
+    }
+    .who{display:flex;gap:10px;align-items:center}
+    .avatar{
+      width:40px;height:40px;border-radius:14px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 95%, white),
+                                      color-mix(in srgb, var(--accent2) 95%, white));
+      display:grid;place-items:center;
+      color:white;font-weight:900;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    }
+    .name{font-weight:900}
+    .handle{font-family:var(--mono);font-size:12px;color:var(--muted)}
+    .post .content{padding:10px 12px 12px;white-space:pre-wrap;word-wrap:break-word}
+    .post .content a{color:var(--accent);text-decoration:none}
+    .post .content a:hover{text-decoration:underline}
+    .actions{
+      border-top:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      padding:10px 12px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+    }
+    .actionRow{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      padding:8px 10px;border-radius:999px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel2) 55%, transparent);
+      cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:13px;
+      user-select:none;
+    }
+    .chip:hover{border-color: color-mix(in srgb, var(--accent) 40%, var(--border))}
+    .chip.on{border-color: color-mix(in srgb, var(--good) 55%, var(--border));}
+    .chip.danger:hover{border-color: color-mix(in srgb, var(--danger) 55%, var(--border))}
+    .thread{padding:0 12px 12px; display:none}
+    .thread.open{display:block}
+    .replyBox{margin-top:10px;display:flex;gap:8px}
+    .replyBox input{
+      flex:1;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 12px;
+      outline:none;
+      font-size:14px;
+    }
+    .replies{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+    .reply{
+      border:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      border-radius:14px;
+      padding:10px 10px;
+      background: color-mix(in srgb, var(--panel2) 50%, transparent);
+    }
+    .reply .rmeta{display:flex;justify-content:space-between;gap:8px}
+    .tag{display:inline-flex;gap:6px;align-items:center}
+    .badge{
+      font-family:var(--mono);
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+    .muted{color:var(--muted)}
+    .hr{height:1px;background: color-mix(in srgb, var(--border) 70%, transparent);margin:12px 0}
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      border:1px solid var(--border);
+      padding:10px 12px;border-radius:999px;
+      box-shadow: var(--shadow);
+      display:none;
+      max-width:min(740px,calc(100% - 24px));
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .toast.show{display:block}
+    .kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--border);padding:2px 6px;border-radius:8px;color:var(--muted)}
+  </style>
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" title="Rebelverse"><span>RV</span></div>
+      <div>
+        <div style="font-size:16px">Rebelverse</div>
+        <div class="small">a local microverse feed</div>
+      </div>
+    </div>
+
+    <div class="pill" title="Search posts (supports #hashtags)">
+      🔎 <input id="search" placeholder="Search Rebelverse…" autocomplete="off"/>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn" id="themeBtn" title="Toggle theme">🌓 Theme</button>
+      <button class="btn" id="exportBtn" title="Export your data">⬇️ Export</button>
+      <button class="btn danger" id="resetBtn" title="Reset all local data">🧨 Reset</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <!-- LEFT -->
+    <aside class="left">
+      <div class="card">
+        <div class="hd"><h3>Menu</h3><span class="badge">v1</span></div>
+        <div class="bd nav" id="nav">
+          <a href="#home" data-view="home" class="active">🏠 Home</a>
+          <a href="#explore" data-view="explore">🧭 Explore</a>
+          <a href="#profile" data-view="profile">👤 Profile</a>
+          <a href="#settings" data-view="settings">⚙️ Settings</a>
+        </div>
+        <div class="bd small">
+          Tip: Use <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> to post.
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="hd"><h3>Your Stats</h3></div>
+        <div class="bd small" id="stats"></div>
+      </div>
+    </aside>
+
+    <!-- CENTER -->
+    <main>
+      <div class="card" id="composerCard">
+        <div class="hd">
+          <h3>Create a post</h3>
+          <div class="small muted">Max 280 chars • #hashtags • @mentions</div>
+        </div>
+        <div class="bd">
+          <textarea id="composer" maxlength="280" placeholder="What’s happening in Rebelverse?"></textarea>
+          <div class="composerRow">
+            <div class="counter"><span id="count">0</span>/280</div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn" id="clearBtn">🧽 Clear</button>
+              <button class="btn primary" id="postBtn">🚀 Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:14px"></div>
+
+      <div class="card">
+        <div class="hd">
+          <h3 id="feedTitle">Timeline</h3>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn" id="sortBtn" title="Toggle sort order">⏱️ Newest</button>
+            <button class="btn" id="seedBtn" title="Add sample posts">🌱 Seed</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="feed" id="feed"></div>
+          <div class="small muted" id="emptyHint" style="display:none;margin-top:10px">
+            No posts yet. Make the first move. 😈
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT -->
+    <aside class="right">
+      <div class="card">
+        <div class="hd"><h3>Trending</h3></div>
+        <div class="bd" id="trending"></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="hd"><h3>About</h3></div>
+        <div class="bd small">
+          Rebelverse is a lightweight “tweet-style” feed that runs in your browser.
+          <div class="hr"></div>
+          <div class="muted">No server. No logins. Data stays in this device’s localStorage.</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  // ---------- Storage ----------
+  const LS_KEY = "rebelverse_v1";
+  const defaultState = {
+    theme: "dark",
+    sort: "newest", // newest | oldest
+    profile: { name: "Rebel 45", handle: "rebelverse", bio: "Welcome to Rebelverse.", },
+    posts: []
+  };
+
+  const load = () => {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return structuredClone(defaultState);
+      const st = JSON.parse(raw);
+      return { ...structuredClone(defaultState), ...st };
+    } catch(e){
+      return structuredClone(defaultState);
+    }
+  };
+
+  const save = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
+  let state = load();
+
+  // ---------- Helpers ----------
+  const $ = (sel) => document.querySelector(sel);
+  const esc = (s) => (s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const nowId = () => Math.random().toString(36).slice(2) + "-" + Date.now().toString(36);
+  const fmtTime = (ms) => new Date(ms).toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  const toast = (msg) => {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._tm);
+    toast._tm = setTimeout(()=>t.classList.remove("show"), 2200);
+  };
+
+  const linkify = (text) => {
+    const safe = esc(text);
+    // hashtags
+    let out = safe.replace(/(^|[\s.,!?:;()])#([a-zA-Z0-9_]{1,50})/g, (m, pre, tag) =>
+      `${pre}<a href="#explore" data-hash="#${tag}">#${tag}</a>`
+    );
+    // @mentions (display only)
+    out = out.replace(/(^|[\s.,!?:;()])@([a-zA-Z0-9_]{1,50})/g, (m, pre, user) =>
+      `${pre}<span class="badge">@${user}</span>`
+    );
+    // basic urls
+    out = out.replace(/(https?:\/\/[^\s<]+)/g, (u) => `<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
+    return out;
+  };
+
+  const hashtagsOf = (text) => (text.match(/#[a-zA-Z0-9_]{1,50}/g) || []).map(s => s.toLowerCase());
+
+  // ---------- Theme ----------
+  const applyTheme = () => {
+    document.documentElement.setAttribute("data-theme", state.theme === "light" ? "light" : "dark");
+  };
+
+  // ---------- UI Elements ----------
+  const nav = $("#nav");
+  const feedEl = $("#feed");
+  const trendingEl = $("#trending");
+  const statsEl = $("#stats");
+  const searchEl = $("#search");
+  const composerEl = $("#composer");
+  const countEl = $("#count");
+  const feedTitleEl = $("#feedTitle");
+  const emptyHintEl = $("#emptyHint");
+  const sortBtn = $("#sortBtn");
+
+  // Views: home / explore / profile / settings
+  let view = "home";
+  let exploreHashtag = null;
+
+  const setView = (v) => {
+    view = v;
+    exploreHashtag = null;
+    nav.querySelectorAll("a").forEach(a => a.classList.toggle("active", a.dataset.view === v));
+    render();
+  };
+
+  const setExploreHashtag = (hash) => {
+    view = "explore";
+    exploreHashtag = hash.toLowerCase();
+    nav.querySelectorAll("a").forEach(a => a.classList.toggle("active", a.dataset.view === "explore"));
+    render();
+  };
+
+  // ---------- Posts ----------
+  const addPost = (text, parentId=null) => {
+    const clean = (text || "").trim();
+    if(!clean) return toast("Type something first.");
+    const post = {
+      id: nowId(),
+      parentId, // reply-to
+      author: structuredClone(state.profile),
+      text: clean,
+      time: Date.now(),
+      likes: [],
+      reposts: [],
+      replies: [],
+      hashtags: hashtagsOf(clean),
+      deleted: false
+    };
+    state.posts.unshift(post);
+    save();
+    toast(parentId ? "Reply posted." : "Posted to Rebelverse.");
+    return post.id;
+  };
+
+  const getPost = (id) => state.posts.find(p => p.id === id);
+
+  const toggleArr = (arr, value) => {
+    const i = arr.indexOf(value);
+    if(i >= 0) arr.splice(i,1);
+    else arr.push(value);
+  };
+
+  const meKey = () => state.profile.handle.toLowerCase();
+
+  const likePost = (id) => {
+    const p = getPost(id); if(!p) return;
+    toggleArr(p.likes, meKey());
+    save(); render(false);
+  };
+
+  const repostPost = (id) => {
+    const p = getPost(id); if(!p) return;
+    toggleArr(p.reposts, meKey());
+    save(); render(false);
+  };
+
+  const deletePost = (id) => {
+    const p = getPost(id); if(!p) return;
+    p.deleted = true;
+    save();
+    toast("Post deleted.");
+    render();
+  };
+
+  const replyTo = (id, text) => {
+    const p = getPost(id); if(!p) return;
+    const rid = addPost(text, id);
+    if(!rid) return;
+    p.replies.unshift(rid);
+    save();
+    render();
+  };
+
+  // ---------- Render ----------
+  const currentQuery = () => (searchEl.value || "").trim().toLowerCase();
+
+  const filterPosts = () => {
+    const q = currentQuery();
+    let posts = state.posts.filter(p => !p.deleted);
+
+    // View filters
+    if(view === "home"){
+      // show top-level posts only + reposts are represented by counts (no separate items)
+      posts = posts.filter(p => !p.parentId);
+      feedTitleEl.textContent = "Timeline";
+    } else if(view === "explore"){
+      feedTitleEl.textContent = exploreHashtag ? `Explore ${exploreHashtag}` : "Explore";
+      // show top-level posts in explore too
+      posts = posts.filter(p => !p.parentId);
+      if(exploreHashtag){
+        posts = posts.filter(p => p.hashtags.includes(exploreHashtag));
+      }
+    } else if(view === "profile"){
+      feedTitleEl.textContent = "Your Profile";
+      posts = posts.filter(p => p.author.handle.toLowerCase() === meKey());
+    } else if(view === "settings"){
+      feedTitleEl.textContent = "Settings";
+      // no feed for settings
+      posts = [];
+    }
+
+    // Search filter
+    if(q){
+      posts = posts.filter(p => {
+        const hay = (p.text + " " + (p.author.name||"") + " @" + (p.author.handle||"") + " " + (p.hashtags||[]).join(" ")).toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    // Sort
+    posts.sort((a,b) => state.sort === "newest" ? (b.time - a.time) : (a.time - b.time));
+    return posts;
+  };
+
+  const renderTrending = () => {
+    const counts = new Map();
+    for(const p of state.posts){
+      if(p.deleted) continue;
+      for(const h of (p.hashtags||[])){
+        counts.set(h, (counts.get(h)||0) + 1);
+      }
+    }
+    const top = [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
+    trendingEl.innerHTML = top.length ? "" : `<div class="small muted">No hashtags yet. Use #rebelverse</div>`;
+    for(const [h,c] of top){
+      const row = document.createElement("div");
+      row.style.display="flex";
+      row.style.justifyContent="space-between";
+      row.style.alignItems="center";
+      row.style.gap="10px";
+      row.style.padding="8px 0";
+      row.innerHTML = `<a href="#explore" data-hash="${h}" style="text-decoration:none;color:inherit">
+        <strong style="color:var(--accent)">${h}</strong></a>
+        <span class="badge">${c}</span>`;
+      trendingEl.appendChild(row);
+    }
+  };
+
+  const renderStats = () => {
+    const me = meKey();
+    const mine = state.posts.filter(p => !p.deleted && p.author.handle.toLowerCase() === me);
+    const likes = mine.reduce((s,p)=>s+p.likes.length,0);
+    const reposts = mine.reduce((s,p)=>s+p.reposts.length,0);
+    const replies = mine.reduce((s,p)=>s+(p.replies?.length||0),0);
+    statsEl.innerHTML = `
+      <div><strong>${esc(state.profile.name)}</strong> <span class="badge">@${esc(state.profile.handle)}</span></div>
+      <div class="muted" style="margin-top:6px">${esc(state.profile.bio)}</div>
+      <div class="hr"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="badge">Posts: ${mine.length}</div>
+        <div class="badge">Likes: ${likes}</div>
+        <div class="badge">Reposts: ${reposts}</div>
+        <div class="badge">Replies: ${replies}</div>
+      </div>
+    `;
+  };
+
+  const renderSettingsPanel = () => {
+    // Replace composer card content to show profile settings when in settings view
+    const card = $("#composerCard");
+    if(view !== "settings"){
+      // restore composer if needed
+      card.querySelector(".hd h3").textContent = "Create a post";
+      card.querySelector(".hd .muted")?.remove?.();
+      return;
+    }
+    card.querySelector(".hd h3").textContent = "Settings";
+    card.querySelector(".bd").innerHTML = `
+      <div style="display:grid;gap:10px">
+        <label class="small muted">Display name</label>
+        <input id="setName" class="input" style="padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:color-mix(in srgb,var(--panel2) 70%, transparent);color:var(--text);outline:none"
+               value="${esc(state.profile.name)}" />
+        <label class="small muted">Handle (no @)</label>
+        <input id="setHandle" class="input" style="padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:color-mix(in srgb,var(--panel2) 70%, transparent);color:var(--text);outline:none"
+               value="${esc(state.profile.handle)}" />
+        <label class="small muted">Bio</label>
+        <input id="setBio" class="input" style="padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:color-mix(in srgb,var(--panel2) 70%, transparent);color:var(--text);outline:none"
+               value="${esc(state.profile.bio)}" />
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px">
+          <button class="btn primary" id="saveProfileBtn">💾 Save profile</button>
+          <span class="small muted">Changes apply to new posts only.</span>
+        </div>
+      </div>
+    `;
+
+    $("#saveProfileBtn").onclick = () => {
+      const name = ($("#setName").value || "").trim().slice(0,40) || "Rebel";
+      const handle = ($("#setHandle").value || "").trim().replace(/[^a-zA-Z0-9_]/g,"").slice(0,20) || "rebelverse";
+      const bio = ($("#setBio").value || "").trim().slice(0,120) || "Welcome to Rebelverse.";
+      state.profile = { name, handle, bio };
+      save();
+      toast("Profile saved.");
+      render();
+    };
+  };
+
+  const postHTML = (p) => {
+    const isLiked = p.likes.includes(meKey());
+    const isReposted = p.reposts.includes(meKey());
+    const isMine = p.author.handle.toLowerCase() === meKey();
+    const initials = (p.author.name || "R").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+
+    const replies = (p.replies || []).map(id => getPost(id)).filter(Boolean).filter(r => !r.deleted);
+
+    return `
+      <div class="post" data-id="${p.id}">
+        <div class="meta">
+          <div class="who">
+            <div class="avatar" title="@${esc(p.author.handle)}">${esc(initials)}</div>
+            <div>
+              <div class="name">${esc(p.author.name)} <span class="handle">@${esc(p.author.handle)}</span></div>
+              <div class="small muted">${fmtTime(p.time)}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            ${(p.hashtags||[]).slice(0,3).map(h=>`<span class="badge">${esc(h)}</span>`).join("")}
+          </div>
+        </div>
+
+        <div class="content">${linkify(p.text)}</div>
+
+        <div class="actions">
+          <div class="actionRow">
+            <div class="chip ${isLiked ? "on":""}" data-act="like">❤️ <span>${p.likes.length}</span></div>
+            <div class="chip ${isReposted ? "on":""}" data-act="repost">🔁 <span>${p.reposts.length}</span></div>
+            <div class="chip" data-act="toggleThread">💬 <span>${replies.length}</span></div>
+            <div class="chip" data-act="copy">🔗 Copy</div>
+            ${isMine ? `<div class="chip danger" data-act="delete">🗑️ Delete</div>` : ``}
+          </div>
+          <div class="small muted">${(p.parentId ? `Replying to <span class="badge">${esc(getPost(p.parentId)?.author?.handle || "unknown")}</span>` : ``)}</div>
+        </div>
+
+        <div class="thread" data-thread>
+          <div class="replyBox">
+            <input placeholder="Write a reply…" maxlength="200" />
+            <button class="btn" data-act="sendReply">Reply</button>
+          </div>
+          <div class="replies">
+            ${replies.map(r => `
+              <div class="reply">
+                <div class="rmeta">
+                  <div class="tag">
+                    <strong>${esc(r.author.name)}</strong> <span class="badge">@${esc(r.author.handle)}</span>
+                  </div>
+                  <div class="small muted">${fmtTime(r.time)}</div>
+                </div>
+                <div style="margin-top:6px">${linkify(r.text)}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const renderFeed = () => {
+    const posts = filterPosts();
+    feedEl.innerHTML = posts.map(postHTML).join("");
+    emptyHintEl.style.display = posts.length ? "none" : "block";
+
+    // Hook up actions
+    feedEl.querySelectorAll(".post").forEach(node => {
+      const id = node.dataset.id;
+      node.addEventListener("click", (e) => {
+        const actEl = e.target.closest("[data-act]");
+        const hashEl = e.target.closest("a[data-hash]");
+        if(hashEl){
+          e.preventDefault();
+          setExploreHashtag(hashEl.dataset.hash);
+          return;
+        }
+        if(!actEl) return;
+        const act = actEl.dataset.act;
+        if(act === "like") likePost(id);
+        if(act === "repost") repostPost(id);
+        if(act === "delete") deletePost(id);
+        if(act === "copy"){
+          const url = location.href.split("#")[0] + "#post-" + id;
+          navigator.clipboard?.writeText(url);
+          toast("Link copied.");
+        }
+        if(act === "toggleThread"){
+          const th = node.querySelector("[data-thread]");
+          th.classList.toggle("open");
+        }
+        if(act === "sendReply"){
+          const input = node.querySelector(".replyBox input");
+          const text = (input.value || "").trim();
+          if(!text) return toast("Type a reply.");
+          input.value = "";
+          replyTo(id, text);
+        }
+      });
+    });
+
+    // Jump to post if hash contains #post-...
+    const h = location.hash || "";
+    if(h.startsWith("#post-")){
+      const id = h.replace("#post-","");
+      const el = feedEl.querySelector(`.post[data-id="${CSS.escape(id)}"]`);
+      if(el) el.scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+  };
+
+  const render = (rebuildComposer=true) => {
+    applyTheme();
+    sortBtn.textContent = state.sort === "newest" ? "⏱️ Newest" : "⏱️ Oldest";
+
+    // Composer card: show settings panel when in settings view
+    if(view === "settings"){
+      renderSettingsPanel();
+      feedEl.innerHTML = `<div class="small muted">Edit your profile in the Settings panel above.</div>`;
+      emptyHintEl.style.display="none";
+    } else {
+      if(rebuildComposer){
+        // restore composer UI if it was replaced by settings
+        $("#composerCard .bd").innerHTML = `
+          <textarea id="composer" maxlength="280" placeholder="What’s happening in Rebelverse?"></textarea>
+          <div class="composerRow">
+            <div class="counter"><span id="count">0</span>/280</div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn" id="clearBtn">🧽 Clear</button>
+              <button class="btn primary" id="postBtn">🚀 Post</button>
+            </div>
+          </div>
+        `;
+        // rebind
+        bindComposer();
+      }
+      renderFeed();
+    }
+
+    renderTrending();
+    renderStats();
+  };
+
+  // ---------- Bindings ----------
+  const bindComposer = () => {
+    const c = $("#composer");
+    const cnt = $("#count");
+    const postBtn = $("#postBtn");
+    const clearBtn = $("#clearBtn");
+
+    c.value = "";
+    cnt.textContent = "0";
+
+    c.addEventListener("input", () => cnt.textContent = String(c.value.length));
+    c.addEventListener("keydown", (e) => {
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        e.preventDefault();
+        postBtn.click();
+      }
+    });
+    clearBtn.onclick = () => { c.value=""; cnt.textContent="0"; c.focus(); };
+    postBtn.onclick = () => {
+      const id = addPost(c.value);
+      if(!id) return;
+      c.value=""; cnt.textContent="0";
+      render();
+    };
+  };
+
+  nav.addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-view]");
+    if(!a) return;
+    e.preventDefault();
+    setView(a.dataset.view);
+  });
+
+  searchEl.addEventListener("input", () => render(false));
+
+  $("#themeBtn").onclick = () => {
+    state.theme = state.theme === "light" ? "dark" : "light";
+    save(); applyTheme(); toast(`Theme: ${state.theme}`);
+  };
+
+  $("#sortBtn").onclick = () => {
+    state.sort = state.sort === "newest" ? "oldest" : "newest";
+    save(); render(false);
+  };
+
+  $("#resetBtn").onclick = () => {
+    if(!confirm("Reset Rebelverse? This deletes all local posts on this device.")) return;
+    localStorage.removeItem(LS_KEY);
+    state = load();
+    toast("Reset complete.");
+    location.hash = "#home";
+    setView("home");
+  };
+
+  $("#exportBtn").onclick = () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "rebelverse-export.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast("Exported JSON.");
+  };
+
+  $("#seedBtn").onclick = () => {
+    const samples = [
+      "Welcome to #Rebelverse — a tweet-style feed you can embed anywhere. 🚀",
+      "Drop a hashtag like #countryrap or #underground and check Trending.",
+      "Reply, like, repost… all stored locally on your device. #buildinpublic"
+    ];
+    for(const t of samples) addPost(t);
+    save(); render();
+  };
+
+  // Trending click delegation
+  trendingEl.addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-hash]");
+    if(!a) return;
+    e.preventDefault();
+    setExploreHashtag(a.dataset.hash);
+  });
+
+  // Hash routing
+  const route = () => {
+    const h = (location.hash || "#home").replace("#","");
+    if(h.startsWith("post-")) return; // keep current view
+    const valid = new Set(["home","explore","profile","settings"]);
+    if(valid.has(h)) setView(h);
+  };
+  window.addEventListener("hashchange", route);
+
+  // Init
+  applyTheme();
+  bindComposer();
+  route();
+  render();
+})();
+</script>
+</body>
+</html>
